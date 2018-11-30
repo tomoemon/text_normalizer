@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestNewNormalizer(t *testing.T) {
+func TestNewTextNormalizer(t *testing.T) {
 	tests := []struct {
 		options []TextReplaceOption
 		name    string
@@ -146,38 +146,50 @@ func TestNewNormalizer(t *testing.T) {
 		{
 			name:    "英字を全角に変換",
 			options: []TextReplaceOption{AlphabetToZenkaku},
-			input:   "abcABC123!#$ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ",
-			want:    "ａｂｃＡＢＣ123!#$ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ",
+			input:   "abcABC123!#$ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ' '　'",
+			want:    "ａｂｃＡＢＣ123!#$ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ' '　'",
 		},
 		{
 			name:    "英字を半角に変換",
 			options: []TextReplaceOption{AlphabetToHankaku},
-			input:   "abcABC123!#$ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ",
-			want:    "abcABC123!#$abcABC123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ",
+			input:   "abcABC123!#$ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ' '　'",
+			want:    "abcABC123!#$abcABC123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ' '　'",
 		},
 		{
 			name:    "半角記号を全角に変換",
 			options: []TextReplaceOption{HankakuSignToZenkaku},
-			input:   "abcABC123!#$ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ",
-			want:    "abcABC123！＃＄ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ",
+			input:   "abcABC123!#$ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ' '　'",
+			want:    "abcABC123！＃＄ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ’ ’　’",
 		},
 		{
 			name:    "全角記号を半角に変換",
 			options: []TextReplaceOption{ZenkakuSignToHankaku},
-			input:   "abcABC123!#$ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ",
-			want:    "abcABC123!#$ａｂｃＡＢＣ123!#$ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ",
+			input:   "abcABC123!#$ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ' '　'",
+			want:    "abcABC123!#$ａｂｃＡＢＣ123!#$ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ' '　'",
+		},
+		{
+			name:    "半角スペースを全角に変換",
+			options: []TextReplaceOption{HankakuSpaceToZenkaku},
+			input:   "abcABC123!#$ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ' '　'",
+			want:    "abcABC123!#$ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ'　'　'",
+		},
+		{
+			name:    "全角スペースを半角に変換",
+			options: []TextReplaceOption{ZenkakuSpaceToHankaku},
+			input:   "abcABC123!#$ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ' '　'",
+			want:    "abcABC123!#$ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ' ' '",
 		},
 		{
 			name:    "全角数字を半角に、全角記号を半角に、英字を半角小文字に、かな文字を全角カタカナに変換",
 			options: []TextReplaceOption{ZenkakuNumberToHankaku, ZenkakuSignToHankaku, AlphabetToLowerHankaku, KanaToZenkakuKatakana},
-			input:   "abcABC123!#$ａｂｃＡＢＣ１２３！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ",
-			want:    "abcabc123!#$abcabc123!#$アイウアイウアイウガガガパパパ",
+			input:   "abcABC123!#$ａｂｃＡＢＣ１２３！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ' '　'",
+			want:    "abcabc123!#$abcabc123!#$アイウアイウアイウガガガパパパ' '　'",
 		},
 		{
 			name:    "全角数字を半角に、全角記号を半角に、英字を半角小文字に、かな文字を濁点なし全角カタカナに変換",
 			options: []TextReplaceOption{ZenkakuNumberToHankaku, ZenkakuSignToHankaku, AlphabetToLowerHankaku, KanaToZenkakuKatakana, RemoveDakuten},
-			input:   "abcABC123!#$ａｂｃＡＢＣ１２３！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ",
-			want:    "abcabc123!#$abcabc123!#$アイウアイウアイウカカカハハハ",
+			input:   "abcABC123!#$ａｂｃＡＢＣ１２３！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ' '　'",
+			want:    "abcabc123!#$abcabc123!#$アイウアイウアイウカカカハハハ' '　'",
 		},
 		{
 			name:    "マッピング先がないものは変換時に無視される",
