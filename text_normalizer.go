@@ -11,7 +11,8 @@ Zenkaku…全角文字
 Katakana…カタカナ
 Hiragana…ひらがな
 Kana…カタカナ、ひらがな
-Alphabet…英字（A-Z）
+Ascii…ASCIIコード表で定義される文字
+Alphabet…英字
 Sign…記号
 Space…空白文字
 */
@@ -107,11 +108,11 @@ func NewTextNormalizer(flags ...TextReplaceOption) *strings.Replacer {
 		removeNoMapping = true
 	}
 
-	projectAsciiNumber := AsciiNumberMap.projectFuncWithOption(removeNoMapping)
-	projectKana := JapaneseKanaMap.projectFuncWithOption(removeNoMapping)
-	projectAsciiAlphabet := AsciiAlphabetMap.projectFuncWithOption(removeNoMapping)
-	projectAsciiSign := AsciiSignMap.projectFuncWithOption(removeNoMapping)
-	projectSpace := SpaceMap.projectFuncWithOption(removeNoMapping)
+	projectAsciiNumber := asciiNumberMap.projectFuncWithOption(removeNoMapping)
+	projectKana := kanaMap.projectFuncWithOption(removeNoMapping)
+	projectAsciiAlphabet := asciiAlphabetMap.projectFuncWithOption(removeNoMapping)
+	projectAsciiSign := asciiSignMap.projectFuncWithOption(removeNoMapping)
+	projectSpace := spaceMap.projectFuncWithOption(removeNoMapping)
 
 	var replacerMapping []string
 	for _, f := range flags {
@@ -207,7 +208,7 @@ func (c *charMap) project(from, to int, removeUnknown bool) []string {
 	return result
 }
 
-var AsciiNumberMap = charMap{
+var asciiNumberMap = charMap{
 	data: [][]string{
 		// 半角数字, 全角数字
 		{"0", "０"},
@@ -223,7 +224,7 @@ var AsciiNumberMap = charMap{
 	},
 }
 
-var JapaneseKanaMap = charMap{
+var kanaMap = charMap{
 	data: [][]string{
 		// 半角カタカナ, 全角カタカナ, 全角ひらがな、濁点なし半角カタカナ、濁点なし全角カタカナ、濁点なし全角ひらがな
 		// マッピングは上にあるものから順に適用される
@@ -313,7 +314,7 @@ var JapaneseKanaMap = charMap{
 	},
 }
 
-var AsciiAlphabetMap = charMap{
+var asciiAlphabetMap = charMap{
 	data: [][]string{
 		// 半角小文字, 半角大文字, 全角小文字, 全角大文字
 		{"a", "A", "ａ", "Ａ"},
@@ -345,14 +346,14 @@ var AsciiAlphabetMap = charMap{
 	},
 }
 
-var SpaceMap = charMap{
+var spaceMap = charMap{
 	data: [][]string{
 		// 半角スペース, 全角スペース
 		{" ", "　"},
 	},
 }
 
-var AsciiSignMap = charMap{
+var asciiSignMap = charMap{
 	data: [][]string{
 		// 半角記号, 全角記号
 		{"!", "！"},
