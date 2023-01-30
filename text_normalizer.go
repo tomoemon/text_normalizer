@@ -20,72 +20,72 @@ Space…空白文字
 const (
 	// 以下、変換プロセスに影響を与える共通オプション
 
-	// 濁点なしの文字に変換する（カナ系文字への変換オプションと同時に使う）
+	// RemoveDakuten は濁点なしの文字に変換する（カナ系文字への変換オプションと同時に使う）
 	RemoveDakuten TextReplaceOption = iota + 1
 
-	// 変換先の文字が存在しない場合に削除する（デフォルト：無視する）
+	// RemoveNoMapping は変換先の文字が存在しない場合に削除する（デフォルト：無視する）
 	RemoveNoMapping
 
 	// 以下、個別の変換オプション
 
-	// 半角数字→全角数字
+	// HankakuNumberToZenkaku は半角数字→全角数字
 	HankakuNumberToZenkaku
 
-	// 全角数字→半角数字
+	// ZenkakuNumberToHankaku は全角数字→半角数字
 	ZenkakuNumberToHankaku
 
-	// 半角カタカナ→全角カタカナ
+	// HankakuKatakanaToZenkaku は半角カタカナ→全角カタカナ
 	HankakuKatakanaToZenkaku
 
-	// 全角カタカナ→半角カタカナ
+	// ZenkakuKatakanaToHankaku は全角カタカナ→半角カタカナ
 	ZenkakuKatakanaToHankaku
 
-	// (全角カタカナ、半角カタカナ）→ひらがな
+	// KatakanaToHiragana は(全角カタカナ、半角カタカナ）→ひらがな
 	KatakanaToHiragana
 
-	// ひらがな→全角カタカナ
+	// HiraganaToZenkakuKatakana はひらがな→全角カタカナ
 	HiraganaToZenkakuKatakana
 
-	// ひらがな→半角カタカナ
+	// HiraganaToHankakuKatakana はひらがな→半角カタカナ
 	HiraganaToHankakuKatakana
 
-	// (ひらがな、全角カタカナ、半角カタカナ) →ひらがな
+	// KanaToHiragana は(ひらがな、全角カタカナ、半角カタカナ) →ひらがな
 	KanaToHiragana
 
-	// (ひらがな、全角カタカナ、半角カタカナ) →全角カタカナ
+	// KanaToZenkakuKatakana は(ひらがな、全角カタカナ、半角カタカナ) →全角カタカナ
 	KanaToZenkakuKatakana
 
-	// (ひらがな、全角カタカナ、半角カタカナ) →半角カタカナ
+	// KanaToHankakuKatakana は(ひらがな、全角カタカナ、半角カタカナ) →半角カタカナ
 	KanaToHankakuKatakana
 
-	// (半角英字、全角英字) →全角大文字英字
+	// AlphabetToUpperZenkaku は(半角英字、全角英字) →全角大文字英字
 	AlphabetToUpperZenkaku
 
-	// (半角英字、全角英字) →半角大文字英字
+	// AlphabetToUpperHankaku は(半角英字、全角英字) →半角大文字英字
 	AlphabetToUpperHankaku
 
-	// (半角英字、全角英字) →全角小文字英字
+	// AlphabetToLowerZenkaku は(半角英字、全角英字) →全角小文字英字
 	AlphabetToLowerZenkaku
 
-	// (半角英字、全角英字) →半角小文字英字
+	// AlphabetToLowerHankaku は(半角英字、全角英字) →半角小文字英字
 	AlphabetToLowerHankaku
 
-	// (半角英字、全角英字) →全角英字（大文字小文字の区別は維持する）
+	// AlphabetToZenkaku は(半角英字、全角英字) →全角英字（大文字小文字の区別は維持する）
 	AlphabetToZenkaku
 
-	// (半角英字、全角英字) →半角英字（大文字小文字の区別は維持する）
+	// AlphabetToHankaku は(半角英字、全角英字) →半角英字（大文字小文字の区別は維持する）
 	AlphabetToHankaku
 
-	// 半角記号→全角記号
+	// HankakuSignToZenkaku は半角記号→全角記号
 	HankakuSignToZenkaku
 
-	// 全角記号→半角記号
+	// ZenkakuSignToHankaku は全角記号→半角記号
 	ZenkakuSignToHankaku
 
-	// 半角スペース→全角スペース
+	// HankakuSpaceToZenkaku は半角スペース→全角スペース
 	HankakuSpaceToZenkaku
 
-	// 全角スペース→半角スペース
+	// ZenkakuSpaceToHankaku は全角スペース→半角スペース
 	ZenkakuSpaceToHankaku
 )
 
@@ -176,6 +176,9 @@ func NewTextNormalizer(flags ...TextReplaceOption) *strings.Replacer {
 			replacerMapping = append(replacerMapping, projectSpace(1, 0)...)
 		}
 	}
+	// 同じマッピング元が複数回定義される場合、最初に定義されたものが使用される
+	// eg. [[".", "。"], [".", "．"]]
+	// というマッピングが渡されたとき、"hoge." は "hoge。" になる
 	return strings.NewReplacer(replacerMapping...)
 }
 
@@ -363,14 +366,19 @@ var asciiSignMap = charMap{
 		{"%", "％"},
 		{"&", "＆"},
 		{"'", "’"},
+		{"'", "‘"},
 		{"(", "（"},
 		{")", "）"},
 		{"*", "＊"},
 		{"+", "＋"},
 		{",", "，"},
+		{",", "、"},
 		{"-", "－"},
+		{"-", "ー"},
 		{".", "．"},
+		{"。", "．"},
 		{"/", "／"},
+		{"/", "・"},
 		{":", "："},
 		{";", "；"},
 		{"<", "＜"},
@@ -379,6 +387,7 @@ var asciiSignMap = charMap{
 		{"?", "？"},
 		{"@", "＠"},
 		{"[", "［"},
+		{"\\", "＼"},
 		{"\\", "￥"},
 		{"]", "］"},
 		{"^", "＾"},
@@ -388,5 +397,6 @@ var asciiSignMap = charMap{
 		{"|", "｜"},
 		{"}", "｝"},
 		{"~", "～"},
+		{"~", "￣"},
 	},
 }

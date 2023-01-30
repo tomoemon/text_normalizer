@@ -158,14 +158,14 @@ func TestNewTextNormalizer(t *testing.T) {
 		{
 			name:    "半角記号を全角に変換",
 			options: []TextReplaceOption{HankakuSignToZenkaku},
-			input:   "abcABC123!#$ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ' '　'",
-			want:    "abcABC123！＃＄ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ’ ’　’",
+			input:   "abcABC123!#$ａｂｃＡＢＣ123！＃＄,ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ' '　'",
+			want:    "abcABC123！＃＄ａｂｃＡＢＣ123！＃＄，ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ’ ’　’",
 		},
 		{
 			name:    "全角記号を半角に変換",
 			options: []TextReplaceOption{ZenkakuSignToHankaku},
-			input:   "abcABC123!#$ａｂｃＡＢＣ123！＃＄ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ' '　'",
-			want:    "abcABC123!#$ａｂｃＡＢＣ123!#$ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ' '　'",
+			input:   "abcABC123!#$ａｂｃＡＢＣ123！＃＄、ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ' '　'",
+			want:    "abcABC123!#$ａｂｃＡＢＣ123!#$,ｱｲｳアイウあいうｶﾞガがﾊﾟパぱ' '　'",
 		},
 		{
 			name:    "半角スペースを全角に変換",
